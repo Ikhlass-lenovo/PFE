@@ -1,0 +1,20 @@
+fos_rest:
+    routing_loader:
+        default_format: json
+        include_format: false
+    body_listener: true
+        #array_normalizer: fos_rest.normalizer.camel_keys
+    format_listener:
+          rules:
+               - { path: '^/', priorities: ['json', 'xml'], fallback_format: json, prefer_extension: false }
+               #- { path: '^/', priorities: ['html'], fallback_format: html, prefer_extension: false }
+
+    param_fetcher_listener: true
+    access_denied_listener:
+        json: true
+    view:
+        view_response_listener: true
+        formats:
+            json: true
+    #service:
+        #serializer: "fos_rest.serializer.jms"
