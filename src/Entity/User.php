@@ -1,201 +1,235 @@
 <?php
-//src/Entity/User.php
 
 namespace App\Entity;
 
+use App\Repository\UserRepository;
+use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Serializer\Annotation\Groups;
+use JMS\Serializer\Annotation as JMS;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use FOS\UserBundle\Model\User as BaseUser;
-use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity
- * @ORM\Table(name="user")
+ * @ORM\Entity(repositoryClass=UserRepository::class)
+ * @UniqueEntity(fields={"email", "username"})
+     * @JMS\ExclusionPolicy("none")
+ 
+ * 
  */
-class User extends BaseUser
+class User implements UserInterface
 {
     /**
-     * @ORM\Id
-     * @ORM\Column(type="integer", nullable=true
- *          )
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\Id()
+     * @ORM\GeneratedValue()
+     * @ORM\Column(type="integer")
+     * @JMS\Groups({"user:read"})
      */
-    protected $id;
-
-
-/**
- * @ORM\Column(type="string", nullable=true)
- */
-protected $nom;
-
-
-
-/**
- * @ORM\Column(type="string", nullable=true
- *          )
- */
-protected $prenom;
-
-
-/**
- * @ORM\Column(type="string", nullable=true
- *          )
- */
-
-protected $adresse;
-
-
-
-
-
-
-   /**
-    * Set nom
-    *
-    * @param string $nom
-    *
-   
-    */
-    public function setNom($Nom)
-    {
-        $this->nom = $nom;
-        return $this;
-    }
- 
-    /**
-    * Set prenom
-    *
-    * @param string $prenom
-    *
-   
-    */
-    public function setPrenom($prenom)
-    {
-        $this->prenom= $prenom;
-        return $this;
-    }
- 
-   /**
-    * Set adresse
-    *
-    * @param string $adresse
-    *
-   
-    */
-    public function setAdresse($adresse)
-    {
-        $this->adresse = $adresse;
-        return $this;
-    }
-/**
-    * Set email
-    *
-   
-
-    * @param string $email
-    *
-    
-    */
-    public function setEmail($email)
-    {
-        $this->email = $email;
-        return $this;
-    }
-    
-   
-   /**
-    * Set password
-    *
-    * @param string $password
-    *
-    
-    */
-    public function setPassword($password)
-    {
-        $this->password = $password;
-        return $this;
-    }
- 
-
-/**
-    * Get Nom
-    *
-    * @return string
-    */
-    public function getNom()
-    {
-        return $this->nom;
-    }
- 
- /**
-    * Get Prenom
-    *
-    * @return string
-    */
-    public function getPrenom()
-    {
-        return $this->prenom;
-    }
+    private $id;
 
     /**
-    * Get adresse
-    *
-    * @return string
-    */
-    public function getAdresse()
-    {
-        return $this->adresse;
-    }
+     * @ORM\Column(type="string", length=255)
+     * @Assert\Email
+     * @JMS\Groups({"user:read"})
+     */
+    private $email;
 
     /**
-    * Get Email
-    *
-    * @return string
-    */
-    public function getEmail()
+     * @ORM\Column(type="string", length=255)
+     * @Assert\NotNull
+     * @Assert\NotBlank
+    * @JMS\Groups({"user:read"})
+     */
+    private $username;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     * @Assert\NotNull
+     * @Assert\NotBlank
+     */
+    private $password;
+     /**
+     * @ORM\Column(type="string", length=255)
+     * @Assert\NotNull
+     * @Assert\NotBlank
+     */
+    private $nom;
+     /**
+     * @ORM\Column(type="string", length=255)
+     * @Assert\NotNull
+     * @Assert\NotBlank
+     */
+    private $prenom;
+     /**
+     * @ORM\Column(type="string", length=255)
+     * @Assert\NotNull
+     * @Assert\NotBlank
+     */
+    private $adresse;
+    
+     /**
+     * @ORM\Column(type="json")
+     * @JMS\Groups({"user:read"})
+     */
+    private $roles=[];
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $activationToken;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $resetPasswordToken;
+
+      /**
+     * @ORM\OneToMany(targetEntity=GpsHisto::class, mappedBy="user")
+     */
+    private $gpsHistos;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getEmail(): ?string
     {
         return $this->email;
     }
 
-    /**
-    * Get Password
-    *
-    * @return string
-    */
-    public function getPassword()
+    public function setEmail(string $email): self
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    public function getUsername(): ?string
+    {
+        return $this->username;
+    }
+
+    public function setUsername(string $username): self
+    {
+        $this->username = $username;
+
+        return $this;
+    }
+
+    public function getPassword(): ?string
     {
         return $this->password;
     }
 
-    /**
-    * Get Username
-    *
-    *@return string
-    
-    *public function getUsername()
-    *{
-        *return $this->username;
-*} 
-**/
-    
+    public function setPassword(string $password): self
+    {
+        $this->password = $password;
 
-
-    /**
-     * @ORM\OneToMany(targetEntity=GpsHisto::class, mappedBy="user")
+        return $this;
+    }
+      /**
+     * @see UserInterface
      */
-    
-    private $gpsHistos;
+    public function getSalt()
+    {
+        // not needed when using the "bcrypt" algorithm in security.yaml
+    }
 
-    public function __construct()
+    /**
+     * @see UserInterface
+     */
+    public function eraseCredentials()
+    {
+        // If you store any temporary, sensitive data on the user, clear it here
+        // $this->plainPassword = null;
+    }
+
+ 
+   /**
+     * @see UserInterface
+     */
+     public function getRoles(): array
+    {
+        $roles = $this->roles;
+        // guarantee every user at least has ROLE_USER
+        $roles[] = 'ROLE_USER';
+
+        return array_unique($roles);
+    }
+
+     public function setRoles(array $roles): self
+    {
+        $this->roles = $roles;
+
+        return $this;
+    }
+
+     public function getActivationToken(): ?string
+     {
+         return $this->activationToken;
+     }
+
+     public function setActivationToken(?string $activationToken): self
+     {
+         $this->activationToken = $activationToken;
+
+         return $this;
+     }
+
+     public function getResetPasswordToken(): ?string
+     {
+         return $this->resetPasswordToken;
+     }
+
+     public function setResetPasswordToken(?string $resetPasswordToken): self
+     {
+         $this->resetPasswordToken = $resetPasswordToken;
+
+         return $this;
+     }
+     public function getNom(): ?string
+     {
+         return $this->nom;
+     }
+ 
+     public function setNom(string $nom): self
+     {
+         $this->nom = $nom;
+ 
+         return $this;
+     }
+
+     public function getPrenom(): ?string
+     {
+         return $this->prenom;
+     }
+ 
+     public function setPrenom(string $prenom): self
+     {
+         $this->prenom = $prenom;
+ 
+         return $this;
+     }
+     public function getAdresse(): ?string
+     {
+         return $this->adresse;
+     }
+ 
+     public function setAdresse(string $adresse): self
+     {
+         $this->adresse = $adresse;
+ 
+         return $this;
+     }
+      public function __construct()
     {
         parent::__construct();
-        // your own logic
+        $this->gpsHistos = new ArrayCollection();    
+    }
 
-        $this->gpsHistos = new ArrayCollection();    }
-
-    /**
-     * @return Collection|GpsHisto[]
-     */
     public function getGpsHistos(): Collection
     {
         return $this->gpsHistos;
@@ -223,4 +257,6 @@ protected $adresse;
 
         return $this;
     }
+
+
 }

@@ -106,7 +106,7 @@ class GpsHisto
      * @ORM\Column(type="float")
       * @Serializer\Groups({"default"})
          */
-    private $accuaracy_gps;
+    private $accuracy_gps;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -138,7 +138,7 @@ class GpsHisto
     private $elapsedrealtimeannos_gps;
 
 		/**
-         * @ORM\ManyToOne(targetEntity="User", inversedBy="Gps", cascade={"persist"})
+         * @ORM\ManyToOne(targetEntity="User", inversedBy="gps_histo", cascade={"persist"})
          * @ORM\JoinColumn(name="id_user", referencedColumnName="id")
          * @Serializer\Groups({"default"})
          */
@@ -239,7 +239,7 @@ class GpsHisto
     {
         $this->date_update = $date_update;
     }
-
+   
    
 
     
@@ -304,14 +304,14 @@ class GpsHisto
         return $this;
     }
 
-    public function getAccuaracyGps(): ?float
+    public function getAccuracyGps(): ?float
     {
-        return $this->accuaracy_gps;
+        return $this->accuracy_gps;
     }
 
-    public function setAccuaracyGps(float $accuaracy_gps): self
+    public function setAccuracyGps(float $accuracy_gps): self
     {
-        $this->accuaracy_gps = $accuaracy_gps;
+        $this->accuracy_gps = $accuracy_gps;
 
         return $this;
     }
@@ -364,7 +364,7 @@ class GpsHisto
         return $this;
     }
 
-   /**public function getUser(): ?User
+   public function getUser(): ?User
     {
         return $this->user;
     }
@@ -374,5 +374,5 @@ class GpsHisto
         $this->user = $user;
 
         return $this;
-    }**/
+    }
 }

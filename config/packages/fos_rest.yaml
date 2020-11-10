@@ -1,4 +1,8 @@
 fos_rest:
+    body_converter:
+        enabled: true
+        validate: true
+        validation_errors_argument: violations
     routing_loader:
         default_format: json
         include_format: false
@@ -6,7 +10,7 @@ fos_rest:
         #array_normalizer: fos_rest.normalizer.camel_keys
     format_listener:
           rules:
-               - { path: '^/', priorities: ['json', 'xml'], fallback_format: json, prefer_extension: false }
+               - { path: '^/', priorities: ['json'], fallback_format: json, prefer_extension: false }
                #- { path: '^/', priorities: ['html'], fallback_format: html, prefer_extension: false }
 
     param_fetcher_listener: true
@@ -16,5 +20,9 @@ fos_rest:
         view_response_listener: true
         formats:
             json: true
+    exception:
+        enabled: true
+        codes:
+           { App\Exception\ResourcesValidationController: 400}
     #service:
         #serializer: "fos_rest.serializer.jms"
